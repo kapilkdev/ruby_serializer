@@ -1,4 +1,23 @@
 class Serializer
+  attr_reader :object
+
+  def initialize(object)
+    @object = object
+  end
+
+  def serialize
+    data = {}
+
+    @@_attribute[self.class.name].each do |key, attr|
+      data[key.to_sym] ||= if attr.is_a?(Symbol)
+                              object.send(attr)
+                            else
+                              instance_eval(&attr)
+                            end
+    end
+
+    data
+  end
 
   class << self
     @@_attribute = {}
